@@ -1,0 +1,13 @@
+apply plugin: 'scala'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.13.1'
+    compile group: 'com.typesafe.akka', name: 'akka-http_2.13',   version: '10.1.11'
+    compile group: 'com.typesafe.akka', name: 'akka-stream_2.13', version: '2.6.3'
+    compile group: 'com.typesafe.akka', name: 'akka-actor-typed_2.13', version: '2.6.3'
+    compile group: 'org.typelevel', name: 'cats-core_2.13', version: '2.1.1'
+}
