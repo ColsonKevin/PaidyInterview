@@ -1,9 +1,11 @@
-// Class representing a command
-class Command {
+/***
+ * Class representing the Order entity
+ */
+class Order {
 
   // Class variables
-  private var item = ""
-  private var cook_time = 0
+  private var item: String = _
+  private var cook_time: Int = _
 
   // Getters and setters
   def set_item(item_val: String): Unit = {
@@ -19,7 +21,8 @@ class Command {
     cook_time
   }
 
+  // Allows to compare orders easier
   def equals(obj: String): Boolean = {
-    this.get_item().equals(obj)
+    item.equals(obj)
   }
 }

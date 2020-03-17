@@ -1,11 +1,9 @@
-import scala.util.{Failure, Random, Success}
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse}
 import akka.http.scaladsl.server.Directives._
 
-import scala.concurrent.duration._
 import akka.stream.Materializer
 import akka.util.Timeout
 import akka.http.scaladsl.server.RouteResult._
@@ -13,9 +11,10 @@ import akka.http.scaladsl.server.RouteResult._
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
 import scala.language.postfixOps
+import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 
-
-object CommandsServer {
+object OrdersServer {
   def main(args: Array[String]): Unit = {
     implicit val system: ActorSystem = ActorSystem("commands-system")
     implicit val materializer: Materializer = Materializer(system)
@@ -31,8 +30,8 @@ object CommandsServer {
               table: String =>
                 val maybeCommands = ask(result, GetCommandsMessage(table.toInt))
                 onComplete(maybeCommands) {
-                  case Success(commands) => complete(HttpEntity(ContentTypes.`application/json`, commands.toString))
-                  case Failure(t) => complete(HttpEntity(ContentTypes.`application/json`, "Commands not found"))}
+                  case Success(commands) => complete(HttpResponse(entity = commands.toString))
+                  case Failure(t) => complete(HttpResponse(entity = "Commands not found"))}
             }
           }
         },
@@ -42,8 +41,8 @@ object CommandsServer {
               (table: String, item: String) =>
               val maybeCreated = ask(result, CreateCommandMessage(table.toInt, item))
               onComplete(maybeCreated) {
-                case Success(created) => complete(HttpEntity(ContentTypes.`application/json`, created.toString))
-                case Failure(t) => complete(HttpEntity(ContentTypes.`application/json`, "Command not created"))
+                case Success(created) => complete(HttpResponse(entity = created.toString))
+                case Failure(t) => complete(HttpResponse(entity = "Command not created"))
               }
             }
           }
@@ -54,8 +53,8 @@ object CommandsServer {
               (table: String, item: String) =>
                 val maybeDeleted = ask(result, DeleteCommandMessage(table.toInt, item))
                 onComplete(maybeDeleted) {
-                  case Success(deleted) => complete(HttpEntity(ContentTypes.`application/json`, deleted.toString))
-                  case Failure(t) => complete(HttpEntity(ContentTypes.`application/json`, "Command not deleted"))
+                  case Success(deleted) => complete(HttpResponse(entity = deleted.toString))
+                  case Failure(t) => complete(HttpResponse(entity = "Command not deleted"))
                 }
             }
           }
@@ -66,8 +65,8 @@ object CommandsServer {
               (table: String, item: String) =>
                 val maybeCommand = ask(result, GetCommandMessage(table.toInt, item))
                 onComplete(maybeCommand) {
-                  case Success(command) => complete(HttpEntity(ContentTypes.`application/json`, command.toString))
-                  case Failure(t) => complete(HttpEntity(ContentTypes.`application/json`, "Command not found"))
+                  case Success(command) => complete(HttpResponse(entity = command.toString))
+                  case Failure(t) => complete(HttpResponse(entity = "Command not found"))
                 }
             }
           }
