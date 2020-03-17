@@ -19,7 +19,7 @@ object OrdersServer {
     implicit val system: ActorSystem = ActorSystem("commands-system")
     implicit val materializer: Materializer = Materializer(system)
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
-    implicit val result: ActorRef = system.actorOf(Props(new CommandsActor))
+    implicit val result: ActorRef = system.actorOf(Props(new OrdersActor))
     implicit val timeout: Timeout = Timeout(2 seconds)
 
     val route = {
@@ -28,7 +28,7 @@ object OrdersServer {
           get {
             parameters("table") {
               table: String =>
-                val maybeCommands = ask(result, GetCommandsMessage(table.toInt))
+                val maybeCommands = ask(result, GetOrdersMessage(table.toInt))
                 onComplete(maybeCommands) {
                   case Success(commands) => complete(HttpResponse(entity = commands.toString))
                   case Failure(t) => complete(HttpResponse(entity = "Commands not found"))}
@@ -39,7 +39,7 @@ object OrdersServer {
           get {
             parameters(("table", "item")) {
               (table: String, item: String) =>
-              val maybeCreated = ask(result, CreateCommandMessage(table.toInt, item))
+              val maybeCreated = ask(result, CreateOrderMessage(table.toInt, item))
               onComplete(maybeCreated) {
                 case Success(created) => complete(HttpResponse(entity = created.toString))
                 case Failure(t) => complete(HttpResponse(entity = "Command not created"))
@@ -51,7 +51,7 @@ object OrdersServer {
           get {
             parameters(("table", "item")) {
               (table: String, item: String) =>
-                val maybeDeleted = ask(result, DeleteCommandMessage(table.toInt, item))
+                val maybeDeleted = ask(result, DeleteOrderMessage(table.toInt, item))
                 onComplete(maybeDeleted) {
                   case Success(deleted) => complete(HttpResponse(entity = deleted.toString))
                   case Failure(t) => complete(HttpResponse(entity = "Command not deleted"))
@@ -63,7 +63,7 @@ object OrdersServer {
           get {
             parameters(("table", "item")) {
               (table: String, item: String) =>
-                val maybeCommand = ask(result, GetCommandMessage(table.toInt, item))
+                val maybeCommand = ask(result, GetOrderMessage(table.toInt, item))
                 onComplete(maybeCommand) {
                   case Success(command) => complete(HttpResponse(entity = command.toString))
                   case Failure(t) => complete(HttpResponse(entity = "Command not found"))

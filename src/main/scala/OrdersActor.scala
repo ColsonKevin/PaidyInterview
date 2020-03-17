@@ -1,23 +1,40 @@
 import akka.actor.Actor
 
-import scala.util.Random
+/***
+ * Classes used as messages used by the Actors to notify the services
+ */
+case class GetOrdersMessage(table: Int)
+case class GetOrderMessage(table: Int, item: String)
+case class CreateOrderMessage(table: Int, item: String)
+case class DeleteOrderMessage(table: Int, item: String)
 
-case class GetCommandsMessage(table: Int)
-case class GetCommandMessage(table: Int, item: String)
-case class CreateCommandMessage(table: Int, item: String)
-case class DeleteCommandMessage(table: Int, item: String)
+/***
+ * Actor class responsible to handle the API messages and relaying to the business processes
+ */
+class OrdersActor extends Actor {
 
-class CommandsActor extends Actor {
+  // Value used to call the business services
+  private implicit val orderService: OrderService = new OrderService
 
-  private implicit val commandService: OrderService = new OrderService
-
+  /***
+   * Defines the behavior of the actor upon receiving a message and sends answers to the senders
+   * @return An answer to the sender
+   */
   def receive: Receive = {
-    case message: GetCommandsMessage => sender() ! commandService.get_orders(message.table).getOrElse("Commands not found")
-    case message: CreateCommandMessage => commandService.create_order(message.table, message.item)
+    // Case to get the orders for a specific table
+    case message: GetOrdersMessage => sender() ! orderService.get_orders(message.table).getOrElse("Commands not found")
+
+    // Case to create a order
+    case message: CreateOrderMessage =>
+      orderService.create_order(message.table, message.item)
       sender() ! "Command created"
-    case message: GetCommandMessage => sender() ! commandService.get_specific_order(message.table, message.item).getOrElse("Command not found")
-    case message: DeleteCommandMessage =>
-      commandService.delete_order(message.table, message.item)
+
+    // Case to get a specific order for a specific table
+    case message: GetOrderMessage => sender() ! orderService.get_specific_order(message.table, message.item).getOrElse("Command not found")
+
+    // Case to delete a order
+    case message: DeleteOrderMessage =>
+      orderService.delete_order(message.table, message.item)
       sender() ! "Command deleted"
   }
 }
