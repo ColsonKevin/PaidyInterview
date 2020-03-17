@@ -18,4 +18,8 @@ class Command {
   def get_cook_type(): Int = {
     cook_time
   }
+
+  def equals(obj: String): Boolean = {
+    this.get_item().equals(obj)
+  }
 }

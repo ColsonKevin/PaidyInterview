@@ -9,7 +9,6 @@ import scala.concurrent.duration._
 import akka.stream.Materializer
 import akka.util.Timeout
 import akka.http.scaladsl.server.RouteResult._
-import akka.http.scaladsl.unmarshalling.FromRequestUnmarshaller
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.io.StdIn
@@ -38,13 +37,38 @@ object CommandsServer {
           }
         },
         path("createCommand") {
-          get{
-            parameters(("table", "item")) { (table: String, item: String) =>
+          get {
+            parameters(("table", "item")) {
+              (table: String, item: String) =>
               val maybeCreated = ask(result, CreateCommandMessage(table.toInt, item))
               onComplete(maybeCreated) {
                 case Success(created) => complete(HttpEntity(ContentTypes.`application/json`, created.toString))
                 case Failure(t) => complete(HttpEntity(ContentTypes.`application/json`, "Command not created"))
               }
+            }
+          }
+        },
+        path("deleteCommand") {
+          get {
+            parameters(("table", "item")) {
+              (table: String, item: String) =>
+                val maybeDeleted = ask(result, DeleteCommandMessage(table.toInt, item))
+                onComplete(maybeDeleted) {
+                  case Success(deleted) => complete(HttpEntity(ContentTypes.`application/json`, deleted.toString))
+                  case Failure(t) => complete(HttpEntity(ContentTypes.`application/json`, "Command not deleted"))
+                }
+            }
+          }
+        },
+        path("getCommand") {
+          get {
+            parameters(("table", "item")) {
+              (table: String, item: String) =>
+                val maybeCommand = ask(result, GetCommandMessage(table.toInt, item))
+                onComplete(maybeCommand) {
+                  case Success(command) => complete(HttpEntity(ContentTypes.`application/json`, command.toString))
+                  case Failure(t) => complete(HttpEntity(ContentTypes.`application/json`, "Command not found"))
+                }
             }
           }
         }

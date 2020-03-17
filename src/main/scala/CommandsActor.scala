@@ -3,8 +3,9 @@ import akka.actor.Actor
 import scala.util.Random
 
 case class GetCommandsMessage(table: Int)
+case class GetCommandMessage(table: Int, item: String)
 case class CreateCommandMessage(table: Int, item: String)
-case class CommandCreatedMessage(action: String)
+case class DeleteCommandMessage(table: Int, item: String)
 
 class CommandsActor extends Actor {
 
@@ -19,5 +20,9 @@ class CommandsActor extends Actor {
       command.set_cook_time(5 + rand.nextInt(10))
       commandService.create_command(message.table, command)
       sender() ! "Command created"
+    case message: GetCommandMessage => sender() ! commandService.get_command_specific(message.table, message.item)
+    case message: DeleteCommandMessage =>
+      commandService.delete_command(message.table, message.item)
+      sender() ! "Command deleted"
   }
 }
