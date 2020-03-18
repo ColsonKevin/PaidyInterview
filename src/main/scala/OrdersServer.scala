@@ -16,27 +16,42 @@ import scala.util.{Failure, Success}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.databind.ObjectMapper
 
+/***
+ * Runnable object taking care of the endpoints asking actors to take care the queries
+ */
 object OrdersServer {
+
+  /***
+   * Main function
+   * @param args: Array[String]
+   */
   def main(args: Array[String]): Unit = {
-    implicit val system: ActorSystem = ActorSystem("commands-system")
+
+    // Class values
+    implicit val system: ActorSystem = ActorSystem("orders-system")
     implicit val materializer: Materializer = Materializer(system)
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
-    implicit val result: ActorRef = system.actorOf(Props(new OrdersActor))
-    implicit val timeout: Timeout = Timeout(2 seconds)
+    implicit val result: ActorRef = system.actorOf(Props(new OrdersActor)) // Actors initialization
+    implicit val timeout: Timeout = Timeout(2 seconds) // Defines the timeout for the queries to enter failure)
 
+    // Endpoints definition
     val route = {
       concat(
-        path("getCommands") {
+
+        // Endpoint to get all orders of a table
+        path("getOrders") {
           get {
             parameters("table") {
               table: String =>
                 onComplete(ask(result, GetOrdersMessage(table.toInt))) {
-                  case Success(commands) => complete(HttpResponse(entity = commands.toString))
-                  case Failure(t) => complete(HttpResponse(entity = "Commands not found"))}
+                  case Success(orders) => complete(HttpResponse(entity = orders.toString))
+                  case Failure(t) => complete(HttpResponse(entity = "Orders not found"))}
             }
           }
         },
-        path("createCommand") {
+
+        // Endpoint to create an order
+        path("createOrder") {
           post {
             entity(as[String]) {
               jsonMap =>
@@ -48,7 +63,9 @@ object OrdersServer {
             }
           }
         },
-        path("deleteCommand") {
+
+        // EndPoint to delete an order
+        path("deleteOrder") {
           post {
             entity(as[String]) {
               jsonMap =>
@@ -60,7 +77,9 @@ object OrdersServer {
             }
           }
         },
-        path("getCommand") {
+
+        // Endpoint to get a specific order for a table
+        path("getOrder") {
           get {
             parameters(("table", "item")) {
               (table: String, item: String) =>
@@ -74,6 +93,8 @@ object OrdersServer {
         }
       )
     }
+
+  // Running the endpoints
     val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine()
