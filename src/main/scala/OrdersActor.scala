@@ -22,19 +22,19 @@ class OrdersActor extends Actor {
    */
   def receive: Receive = {
     // Case to get the orders for a specific table
-    case message: GetOrdersMessage => sender() ! orderService.get_orders(message.table).getOrElse("Commands not found")
+    case message: GetOrdersMessage => sender() ! orderService.get_orders(message.table).getOrElse("Orders not found")
 
     // Case to create a order
     case message: CreateOrderMessage =>
       orderService.create_order(message.table, message.item)
-      sender() ! "Command created"
+      sender() ! "Order created"
 
     // Case to get a specific order for a specific table
-    case message: GetOrderMessage => sender() ! orderService.get_specific_order(message.table, message.item).getOrElse("Command not found")
+    case message: GetOrderMessage => sender() ! orderService.get_specific_order(message.table, message.item).getOrElse("Order not found")
 
     // Case to delete a order
     case message: DeleteOrderMessage =>
       orderService.delete_order(message.table, message.item)
-      sender() ! "Command deleted"
+      sender() ! "Order deleted"
   }
 }

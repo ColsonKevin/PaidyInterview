@@ -31,6 +31,7 @@ class OrderService {
                 commandList.add(order)
                 orders = orders + (table -> commandList)
         }
+        println(s"Stored orders: $orders")
     }
 
     /***
@@ -76,5 +77,6 @@ class OrderService {
                 x.remove(orderToRemove)
             case None =>
         }
+        println(s"Stored orders: $orders")
     }
 }
