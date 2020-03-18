@@ -26,7 +26,7 @@ object OrdersClient {
     implicit val materializer: Materializer = Materializer(system)
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
-    implicit val items: Set[String] = Set("cake", "meat", "vegetables", "fruit", "water", "coke") // Set of items
+    implicit val items: Set[String] = Set("cake", "meat", "vegetables", "fruit") //"water", "coke") // Set of items
     implicit val currentTime: Long = System.currentTimeMillis() / 1000 // Used for the timer to live
 
     // Used to query multiple times

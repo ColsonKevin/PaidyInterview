@@ -2,6 +2,7 @@ plugins {
     id "com.github.maiflai.scalatest" version "0.24"
 }
 apply plugin: 'scala'
+apply plugin: "application"
 
 repositories {
     mavenCentral()
@@ -20,4 +21,4 @@ dependencies {
     testRuntime 'org.pegdown:pegdown:1.4.2'
 }
 
-//buildScan { termsOfServiceUrl = "https://gradle.com/terms-of-service"; termsOfServiceAgree = "yes" }
+mainClassName = "MainApp"
