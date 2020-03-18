@@ -19,7 +19,7 @@ The APIs are defined as the following:
 * The tests framework is pretty self-explanatory, tests are not heavily commented
 * tests mainly focus on the business processes since those are the core of the application
 * Outputs are routed to the console. Servers outputs some important steps and clients outputs the results
-as asked in the assigment. The main executable might make the outputs messy, a lighter executable can be 
+as asked in the assignment. The main executable might make the outputs messy, a lighter executable can be 
 found in the test classes to have a better visibility on the output
 * Orders are stored in a Map. It's an easy enough structure to handle and it allows to organize the orders 
 according to the table number. It would not suffice for a bigger set of data but in our case it is enough
