@@ -25,4 +25,7 @@ class Order {
   def equals(obj: String): Boolean = {
     item.equals(obj)
   }
+
+  // Allows to print an order nicely
+  override def toString: String = new String(s"Order: $item; $cook_time")
 }

@@ -14,6 +14,7 @@ dependencies {
     compile 'com.typesafe.akka:akka-actor-typed_2.13:2.6.3'
     compile 'org.typelevel:cats-core_2.13:2.1.1'
     compile 'org.slf4j:slf4j-api:1.7.30'
+    compile "com.fasterxml.jackson.module:jackson-module-scala_2.13:2.10.3"
     testCompile 'org.scalatest:scalatest_2.13:3.0.8'
     testCompile 'junit:junit:4.13'
     testRuntime 'org.pegdown:pegdown:1.4.2'

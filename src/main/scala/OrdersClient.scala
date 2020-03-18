@@ -1,12 +1,11 @@
-import java.time.LocalDateTime
-import java.util.Calendar
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpResponse
 import akka.stream.Materializer
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.{Failure, Random, Success}
@@ -22,23 +21,19 @@ object OrdersClient {
     val currentTime = System.currentTimeMillis() / 1000
 
     while (true) {
-      Random.nextInt(4) + 1 match {
+      1 + Random.nextInt(4) match {
         case 1 =>
-          val response: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri =
-            "http://localhost:8080/createCommand?table=" +
-              (1 + Random.nextInt(3)) +
-              "&item=" +
-              items.toVector(Random.nextInt(items.size))))
+          val map = Map("table" -> (1 + Random.nextInt(3)).toString, "item" ->  items.toVector(Random.nextInt(items.size)))
+          val mapper = new ObjectMapper().registerModule(DefaultScalaModule).writeValueAsString(map).getBytes()
+          val response: Future[HttpResponse] = Http().singleRequest(HttpRequest(HttpMethods.POST, "http://localhost:8080/createCommand", entity = mapper))
           response.onComplete {
             case Success(result) => println(Unmarshal(result.entity).to[String])
             case Failure(f) => println(f.getMessage)
           }
         case 2 =>
-          val response: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri =
-            "http://localhost:8080/deleteCommand?table=" +
-              (1 + Random.nextInt(3)) +
-              "&item=" +
-              items.toVector(Random.nextInt(items.size))))
+          val map = Map("table" -> (1 + Random.nextInt(3)).toString, "item" ->  items.toVector(Random.nextInt(items.size)))
+          val mapper = new ObjectMapper().registerModule(DefaultScalaModule).writeValueAsString(map).getBytes()
+          val response: Future[HttpResponse] = Http().singleRequest(HttpRequest(HttpMethods.POST, "http://localhost:8080/deleteCommand", entity = mapper))
           response.onComplete {
             case Success(result) => println(Unmarshal(result.entity).to[String])
             case Failure(f) => println(f.getMessage)
